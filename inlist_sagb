@@ -1,0 +1,246 @@
+!===================== star_job =========================================
+
+&star_job
+
+   !--------- Info at start ---------------------------------------------
+      show_log_description_at_start = .true.
+
+   !--------- Initial model (pre-existing) ------------------------------
+      load_saved_model = .true.
+      ! load_model_filename = 'XXMZYYY.mod' ! from make_zams
+      load_model_filename = 'initial_model.mod' 
+      ! XX = mass   YYY = metallicity
+
+   !--------- Final model -----------------------------------------------
+      save_model_when_terminate = .true.
+      save_model_filename = 'finalAGB.mod'
+      ! required_termination_code_string = 'xa_central_lower_limit'
+      show_retry_counts_when_terminate = .true.
+      show_timestep_limit_counts_when_terminate = .true.
+
+   !--------- Nuclear burning -------------------------------------------
+      change_initial_net = .true.
+      new_net_name = 'co_burn_plus.net'
+
+      num_special_rate_factors = 2
+      reaction_for_special_factor(1) = 'r_c12_ag_o16'
+      special_rate_factor(1) = 1
+      filename_of_special_rate(1) = 'r_c12_ag_o16_kunz.txt'
+
+      reaction_for_special_factor(2) = 'r_he4_he4_he4_to_c12'
+      special_rate_factor(2) = 1
+      filename_of_special_rate(2) = 'r_he4_he4_he4_to_c12_cf88.txt'
+
+      new_net_name = 'sagb_NeNa_MgAl.net'
+
+      set_initial_cumulative_energy_error = .true.
+      new_cumulative_energy_error = 0d0
+
+   !--------- Rotation -------------------------------------------------- 
+   !  new_rotation_flag = .true.
+   !  near_zams_relax_omega_div_omega_crit = .true.
+   !  change_rotation_flag = .false.  ! rotation off until near zams
+   !  new_omega_div_omega_crit = 0.99 ! original 0.75d0
+   !  num_steps_to_relax_rotation = 50
+
+   !  change_D_omega_flag = .true.
+   !  new_D_omega_flag = .true.
+
+   !  change_v_flag = .true.
+   !  new_v_flag = .true.
+
+    !--------- Initial age and modelR -----------------------------------
+
+   !  set_initial_age = .true.
+   !  initial_age = 0
+
+   !  set_initial_model_number = .true.
+   !  initial_model_number = 0
+
+    !--------- PGSTAR ---------------------------------------------------
+      pgstar_flag = .true.
+
+/ ! end of star_job namelist
+
+!===================== EOS =========================================
+&eos
+use_Skye = .false.
+/ ! end of eos namelist
+
+
+!===================== OPACITY =========================================
+&kap
+      kap_file_prefix = 'a09'    ! 'gs98' 'a09'  'OP_a09' 'OP_gs98'
+      kap_CO_prefix   = 'a09_co' ! 'gs98_co' 'a09_co'
+      kap_lowT_prefix = 'lowT_fa05_a09p'
+      use_Type2_opacities = .true.
+      Zbase = 0.02
+
+/ ! end of kap namelist
+
+
+!===================== CONTROLS =========================================
+&controls
+
+   !---------- Initial mass and metallicity -----------------------------
+      initial_mass = 1.5d0
+      initial_z = 0.04d0
+
+   !---------- Convergence controls -----------------------------
+      varcontrol_target = 1d-3       ! relative variation in the structure
+
+   !---------- When to stop -----------------------------
+     ! xa_central_lower_limit_species(2) = 'he4'
+     ! xa_central_lower_limit(2) = 1d-5
+     ! max_age = 1d10
+     ! xa_central_lower_limit_species(1) = 'h1'
+     ! xa_central_lower_limit(1) = 0.00001
+     ! max_model_number = 150000
+     ! max_number_retries = 3
+
+   !---------- Convection ------------------------------------------
+      mixing_length_alpha = 1.8d0
+      MLT_option = 'Henyey' ! 'Cox'
+      use_ledoux_criterion = .true.
+      thermohaline_option = 'Kippenhahn'
+      thermohaline_coeff = 100
+      okay_to_reduce_gradT_excess = .true.
+      gradT_excess_lambda1 = -1
+      mixing_length_alpha = 1.5
+      MLT_option = 'Henyey'
+
+ 
+      use_other_alpha_mlt = .true. ! implemented in run_star_extras
+      x_ctrl(21) = 3.0 ! alpha_H
+      x_ctrl(22) = 1.5 ! alpha_other
+      x_ctrl(23) = 0.5 ! H_limit
+         ! use alpha_H if cell X >= H_limit; else use alpha_other
+      x_ctrl(24) = 9d0 ! mass limit (Msun)
+         ! use other_alpfa_mlt only if star_mass >= this limit.
+
+   !---------- Semiconvection and thermohaline ---------------------------
+      alpha_semiconvection = 0d0 ! FIND
+      semiconvection_option = 'Langer_85 mixing; gradT = gradr'
+
+      thermohaline_coeff = 0d0 ! FIND
+      thermohaline_option = 'Kippenhahn'
+
+   !---------- Overshooting -----------------------------
+      min_overshoot_q = 0d0  ! FIND
+      overshoot_D_min = 100.0 ! FIND
+
+      overshoot_scheme(1) = 'exponential'
+      overshoot_zone_type(1) = 'nonburn'
+      overshoot_zone_loc(1) = 'any'
+      overshoot_bdy_loc(1) = 'top'
+      overshoot_f(1) = 0.01
+      overshoot_f0(1) = 0.005
+
+      overshoot_scheme(2) = 'exponential'
+      overshoot_zone_type(2) = 'burn_H'
+      overshoot_zone_loc(2) = 'any'
+      overshoot_bdy_loc(2) = 'top'
+      overshoot_f(2) = 0.01
+      overshoot_f0(2) = 0.005
+
+      overshoot_scheme(3) = 'exponential'
+      overshoot_zone_type(3) = 'burn_He'
+      overshoot_zone_loc(3) = 'any'
+      overshoot_bdy_loc(3) = 'top'
+      overshoot_f(3) = 0.01
+      overshoot_f0(3) = 0.005
+
+      overshoot_scheme(4) = 'exponential'
+      overshoot_zone_type(4) = 'burn_Z'
+      overshoot_zone_loc(4) = 'shell'
+      overshoot_bdy_loc(4) = 'bottom'
+      overshoot_f(4) = 0.01
+      overshoot_f0(4) = 0.005
+
+   !---------- Mesh controls -----------------------------
+      mesh_delta_coeff = 1.0
+      max_dq=2.d-3
+      min_dq_for_xa = 1d-4    ! avoid over-resolving composition changes
+      max_allowed_nz = 4000
+      mesh_dlog_burn_c_dlogP_extra = 0.2d0
+      mesh_dlog_cc_dlogP_extra = 0.2d0
+
+   !---------- Timestep controls -----------------------------
+      time_delta_coeff = 0.8d0
+      max_years_for_timestep = 5d4
+      dX_nuc_drop_limit = 1d-2
+      ! limit on changes in the timestep
+      min_timestep_factor = 0.8d0
+      max_timestep_factor = 1.05d0
+      timestep_factor_for_retries = 0.75
+
+   !---------- Atmosphere -----------------------------------------
+      atm_option = 'T_tau'
+      atm_T_tau_relation = 'Eddington'
+      atm_T_tau_opacity = 'fixed'
+
+   !---------- Stellar winds -----------------------------
+      cool_wind_full_on_T = 0.8d4
+      hot_wind_full_on_T = 1.2d4
+      cool_wind_RGB_scheme = 'Dutch'
+      cool_wind_AGB_scheme = 'Dutch'
+      hot_wind_scheme = 'Dutch'
+      cool_wind_RGB_scheme = 'Dutch'
+      cool_wind_AGB_scheme = 'Dutch'
+      Dutch_scaling_factor = 0.8d0
+      Dutch_wind_lowT_scheme = 'de Jager'
+
+   !---------- Rotation -----------------------------
+
+      am_nu_visc_factor = 0
+      am_D_mix_factor = 0.0333333333333333d00
+      D_DSI_factor = 0
+      D_SH_factor = 1
+      D_SSI_factor = 1
+      D_ES_factor = 1
+      D_GSF_factor = 1
+      D_ST_factor = 1
+
+      smooth_D_ST = 5
+      smooth_nu_ST = 5
+      smooth_D_omega = 5
+      smooth_am_nu_rot = 5
+
+   !---------- Solver controls -----------------------------
+      report_solver_progress = .false. ! set true to see info about solver iterations
+      report_ierr = .false. ! if true, produce terminal output when have some internal error
+      use_gold2_tolerances = .true.
+      energy_eqn_option = 'eps_grav'
+      
+      !trace_evolve = .true.
+
+   !---------- Output controls -----------------------------
+      photo_interval = 50
+      profile_interval = 100
+      history_interval = 5
+      terminal_interval = 10
+      write_header_frequency = 10
+
+      num_trace_history_values = 3
+      trace_history_value_name(1) = 'rel_E_err'
+      trace_history_value_name(2) = 'log_rel_run_E_err'
+      trace_history_value_name(3) = 'surf_avg_v_div_v_crit'
+
+      x_integer_ctrl(1) = 1 ! Part number
+
+/ ! end of controls namelist
+
+&pgstar
+
+    Grid1_win_flag = .true.
+    Abundance_win_flag = .true.
+    TRho_Profile_win_flag = .true.
+    Summary_Burn_win_flag = .true.
+    Summary_Profile_win_flag = .true.
+    Summary_History_win_flag = .true.
+    Kipp_win_flag = .true.
+    TRho_win_flag = .true.
+    HR_win_flag = .true.
+
+/ ! end of pgstar namelist
+

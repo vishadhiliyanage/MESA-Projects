@@ -1,0 +1,157 @@
+!------------------------------------------------------------------------------
+!     1. Educational Entity sequences.
+!
+!     Educational Entity Educational Entity Educational Entity Educational Entity Educational Entity.
+!
+!     Educational Entity Educational Entity.
+!
+!     Educational Entity Educational Entity.
+!------------------------------------------------------------------------------
+
+
+&star_job
+      show_log_description_at_start = .true.
+      
+! Educational Entity Educational Entity Educational Entity age = 0 Educational Entity model 0 (Educational Entity should)
+     set_initial_age = .true.
+     initial_age = 0
+!     Educational Entity_model_number = .true.
+!     initial_model_number = 0
+
+! Educational Entity
+     required_termination_code_string = 'xa_central_lower_limit_species'
+   !  required_termination_code_string = 'max_age'
+     
+! Educational Entity Educational Entity Educational Entity Educational Entity inlist_ZAMS
+     load_saved_model = .true.
+     load_model_filename = 'start.mod'
+
+! Educational Entity Educational Entity Educational Entity Educational Entity Educational Entity.
+     save_model_when_terminate = .true.
+     required_termination_code_string(:) = ''
+     save_model_filename = 'final.mod'
+
+! Educational Entity betwork
+     change_net = .true.
+     new_net_name = 'pp_and_cno_extras.net'
+     change_initial_net = .true.
+     new_net_name = 'pp_and_cno_extras.net'
+     
+     set_initial_cumulative_energy_error = .true.
+     new_cumulative_energy_error = 0d0
+
+! Educational Entity
+     pgstar_flag= .true.
+
+/ ! Educational Entity star_Educational Entity
+
+&eos
+! Educational Entity Educational Entity Educational Entity Educational Entity Educational Entity Educational Entity (EOS)
+
+/ ! Educational Entity Educational Entity
+
+&kap
+! Educational Entity
+! Educational Entity metalicity
+!#1     Zbase = 0.0001
+!#2     Zbase = 0.001
+!#3     Zbase = 0.01
+!#4     Zbase = 0.02
+!#5     Zbase = 0.04
+
+! Educational Entity opacities
+      use_Type2_opacities = .true.
+
+! Educational Entity Educational Entity Educational Entity in X and Z Educational Entity evolution.
+      user_num_kap_Xs = 8
+      user_num_kap_Zs = 4
+      user_num_kap_Xs_for_this_Z=8, 8, 8, 8
+
+      user_kap_Xs = 0.0d0, 0.1d0, 0.2d0, 0.35d0, 0.5d0, 0.7d0, 0.8d0, 0.9d0
+      user_kap_Zs = 0.0d0, 0.0001d0, 0.0003d0, 0.001d0
+!      user_kap_Zs = 0.005d0, 0.01d0, 0.015d0, 0.02d0
+
+/ ! Educational Entity Educational Entity
+
+&controls
+
+! Educational Entity Educational Entity (Educational Entity)
+! Educational Entity Educational Entity Educational Entity (take a Educational Entity Educational Entity A3, B5...)
+!#A      initial_mass = 0.75
+!#B      initial_mass = 1.0
+!#C      initial_mass = 1.5
+!#D      initial_mass = 5.0
+!#E      initial_mass = 15.0
+!#1      initial_z = 0.0001
+!#2      initial_z = 0.001
+!#3      initial_z = 0.01
+!#4      initial_z = 0.02
+!#5      initial_z = 0.04
+
+!      use_dedt_form_of_energy_eqn = .true.
+
+      num_trace_history_values = 2
+      trace_history_value_name(1) = 'rel_E_err'
+      trace_history_value_name(2) = 'log_rel_run_E_err'
+
+      ! Educational Entity
+      !  max_age=1d11   ! Educational Entity
+
+! Educational Entity
+      max_years_for_timestep=1.d7
+
+      ! Educational Entity Educational Entity Educational Entity Educational Entity_Educational Entity
+      ! num_adjusted_dt_steps_before_max_age = 20
+
+      ! Educational Entity
+      ! initial_mass = 0.3162 ! Educational Entity units
+      ! initial_Z = 0.0001
+      ! initial_Y = 0.2479
+      ! max_dq=1.d-3
+        mesh_delta_coeff = 0.5
+        min_allowed_varcontrol_target = 1d-5
+        varcontrol_target = 1.d-5
+
+        tol_correction_norm = 3.d-4
+        tol_max_correction = 3.d-2
+
+        relax_use_gold_tolerances = .true.
+
+! Educational Entity stop (Educational Entity Educational Entity, TAMS) 
+        xa_central_lower_limit_species(1) = 'h1'
+        xa_central_lower_limit(1) = 0.00001
+
+
+      ! Educational Entity
+         mixing_length_alpha = 1.7d0
+         MLT_option = 'Henyey'
+
+      ! atmosphere
+         atm_option = 'T_tau'
+         atm_T_tau_relation = 'Eddington'
+         atm_T_tau_opacity = 'varying' 
+      
+      
+      photo_interval = 50
+      profile_interval = 100
+      history_interval = 50
+      terminal_interval = 10
+      write_header_frequency = 10
+
+/ ! Educational Entity Educational Entity
+
+
+&pgstar
+
+    Grid1_win_flag = .true.
+    Abundance_win_flag = .true.
+    TRho_Profile_win_flag = .true.
+    Summary_Burn_win_flag = .true.
+    Summary_Profile_win_flag = .true.
+    Summary_History_win_flag = .true.
+    Kipp_win_flag = .true.
+    TRho_win_flag = .true.
+    HR_win_flag = .true.
+
+/ ! Educational Entity Educational Entity
+
